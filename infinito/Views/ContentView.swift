@@ -7,14 +7,21 @@
 
 import SwiftUI
 
+//VERY IMPORTANT NOTE//
+
+//WORK TO ELIMINATE ALL OFFSETS AT ALL COSTS.//
+
 struct ContentView: View {
-//MARK: -Properties
+//MARK: -Properties and Methods
     //CoreData enviroment and fetchRequest//
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(entity: Task.entity(), sortDescriptors: []) var tasks: FetchedResults<Task>
     
     //sheet view..need to find a way to close view using the confirm button//
     @State var isPresented = false
+    @State var isEditingList = false
+    
+
  //MARK: -View
     var body: some View {
         VStack {
@@ -23,7 +30,7 @@ struct ContentView: View {
                     //List with delete with swipe functionality//
                     List{
                         ForEach(tasks, id: \.id){ task in
-                            CellView(completionState: task.completionState, title: task.title ?? "")
+                            CellView(completionState: task.completionState, title: task.title!, priority: task.priority ?? "")
                         }
                         .onDelete{IndexSet in
                             let deleteItem = self.tasks[IndexSet.first!]
@@ -70,8 +77,7 @@ struct ContentView: View {
                         .offset(x: 4, y: 0)
                         .padding()
                         .foregroundColor(.green)
-                }.offset(x: -7)
-                .padding(.trailing, 20.0)
+                }.offset(x: -16)
                 Button(action: {}){
                     Image(systemName: "alarm")
                         .resizable()
@@ -98,6 +104,7 @@ struct CellView: View {
     
     @State var completionState: Bool
     @State var title: String
+    @State var priority: String
 
     var body: some View {
         HStack{
@@ -123,6 +130,17 @@ struct CellView: View {
                 Text(title)
                     .foregroundColor(.black)
             
+            Spacer()
+            
+            Button(action: {}) {
+                Text(priority)
+                    .background(Image("buttonBackground")
+                                    .resizable()
+                                    .frame(width: 40, height: 40, alignment: .center)
+                                    .cornerRadius(30.0))
+                    .foregroundColor(.white)
+            }
+            .offset(x: -23)
                 
             }
         }
