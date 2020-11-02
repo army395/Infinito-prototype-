@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct EditView: View{
+    
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(entity: Task.entity(), sortDescriptors: []) var tasks: FetchedResults<Task>
     
@@ -23,6 +24,9 @@ struct EditView: View{
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     
                     Button(action: {
+                        //This button saves data in CoreData//
+                        
+                        //Implement if/else statement to check if data is actually inserted//
                         let task = Task(context: self.moc)
                         
                         task.id = UUID()
@@ -36,7 +40,10 @@ struct EditView: View{
                         Text("Confirm")
                             .foregroundColor(.white)
                             .fontWeight(.medium)
-                            .background(Color(.blue))
+                            .background(Image("buttonBackground")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 80, height: 70))
                             .cornerRadius(6.0)
                     }
                 }

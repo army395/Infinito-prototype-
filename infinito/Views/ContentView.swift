@@ -8,20 +8,37 @@
 import SwiftUI
 
 struct ContentView: View {
+//MARK: -Properties
+    //CoreData enviroment and fetchRequest//
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(entity: Task.entity(), sortDescriptors: []) var tasks: FetchedResults<Task>
     
+    //sheet view..need to find a way to close view using the confirm button//
     @State var isPresented = false
+ //MARK: -View
     var body: some View {
         VStack {
             NavigationView {
                 ZStack {
+                    //List with delete with swipe functionality//
                     List{
                         ForEach(tasks, id: \.id){ task in
-                            CellView(completionState: task.completionState, title: task.title!)
+                            CellView(completionState: task.completionState, title: task.title ?? "")
                         }
-                    }.padding(.horizontal, -25.0)
+                        .onDelete{IndexSet in
+                            let deleteItem = self.tasks[IndexSet.first!]
+                            self.moc.delete(deleteItem)
+                            
+                            do{
+                               try moc.save()
+                            }catch{
+                                print(error)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, -25.0)
                     
+                    //go to EditView//
                     Button(action: {
                         self.isPresented.toggle()
                         print(isPresented)
@@ -34,8 +51,10 @@ struct ContentView: View {
                 .sheet(isPresented: $isPresented, content: {
                     EditView()
                         .environment(\.managedObjectContext, self.moc)
+                    //edit view with MOC passed//
                 })
             }
+            //tool bar//
             HStack(alignment: .center, spacing: 97) {
                 Button(action: {}) {
                     Image(systemName: "highlighter")
@@ -63,7 +82,8 @@ struct ContentView: View {
         }
         
     }
-    
+
+//MARK: -Preview
     struct ContentView_Previews: PreviewProvider {
         static var previews: some View {
             let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -71,26 +91,38 @@ struct ContentView: View {
         }
     }
 }
-
+//MARK: -CellView
 struct CellView: View {
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(entity: Task.entity(), sortDescriptors: []) var tasks: FetchedResults<Task>
     
-    var completionState: Bool
-    var title: String
-    
+    @State var completionState: Bool
+    @State var title: String
+
     var body: some View {
         HStack{
-            switch completionState{
-            case false:
-                Image(systemName: "square")
+           //Mark task complete//
+            Button(action: {
+                completionState.toggle()
+            }) {
+                switch completionState{
+                case false:
+                    Image(systemName: "square")
+                        .resizable()
+                    
+                    
+                case true:
+                    Image(systemName: "checkmark.square")
+                        .resizable()
+                        .foregroundColor(.green)
+                }
                 
-            case true:
-                Image(systemName: "checkmark.square")
-                    .foregroundColor(.green)}
-                
+            }
+            .frame(width: 30, height: 30, alignment: .center)
+            
                 Text(title)
                     .foregroundColor(.black)
+            
                 
             }
         }
