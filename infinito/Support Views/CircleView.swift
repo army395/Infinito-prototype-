@@ -11,7 +11,7 @@ struct CircleView: View {
     var body: some View {
         Image(systemName: "plus.circle.fill")
             .resizable()
-            .frame(width: 50, height: 50, alignment: .center)
+            .frame(width: 60, height: 60, alignment: .center)
             .foregroundColor(.blue)
             .shadow(radius: 10)
     }

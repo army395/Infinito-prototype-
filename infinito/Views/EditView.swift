@@ -85,6 +85,8 @@ struct EditView: View{
                                             .frame(width: 80, height: 80, alignment: .center)
                                             .cornerRadius(50.0))
                             .foregroundColor(.white)
+                        
+                        
                     }
                 }.offset(x: 50)
                 

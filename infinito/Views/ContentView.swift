@@ -15,13 +15,35 @@ struct ContentView: View {
 //MARK: -Properties and Methods
     //CoreData enviroment and fetchRequest//
     @Environment(\.managedObjectContext) var moc
-    @FetchRequest(entity: Task.entity(), sortDescriptors: []) var tasks: FetchedResults<Task>
-    
+    @FetchRequest(entity: Task.entity(), sortDescriptors: [ NSSortDescriptor(
+                                                                keyPath: \Task.userOrder,
+                                                                ascending: true),
+                                                            NSSortDescriptor(
+                                                                keyPath:\Task.title,
+                                                                ascending: true )]) var tasks: FetchedResults<Task>
     //sheet view..need to find a way to close view using the confirm button//
     @State var isPresented = false
-    @State var isEditingList = false
+    @State var isEditing = false
     
+    func move( from source: IndexSet, to destination: Int){
+        // Make an array of items from fetched results
+        var taskItems: [ Task ] = tasks.map{ $0 }
 
+        // change the order of the items in the array
+        taskItems.move(fromOffsets: source, toOffset: destination )
+
+        // update the userOrder attribute in revisedItems to
+        // persist the new order. This is done in reverse order
+        // to minimize changes to the indices.
+        for reverseIndex in stride( from: taskItems.count - 1,
+                                    through: 0,
+                                    by: -1 )
+        {
+            taskItems[ reverseIndex ].userOrder =
+                Int16( reverseIndex )
+        }
+    }
+        
  //MARK: -View
     var body: some View {
         VStack {
@@ -32,6 +54,7 @@ struct ContentView: View {
                         ForEach(tasks, id: \.id){ task in
                             CellView(completionState: task.completionState, title: task.title!, priority: task.priority ?? "")
                         }
+                        .onMove(perform: move)
                         .onDelete{IndexSet in
                             let deleteItem = self.tasks[IndexSet.first!]
                             self.moc.delete(deleteItem)
@@ -41,19 +64,30 @@ struct ContentView: View {
                             }catch{
                                 print(error)
                             }
+                            
                         }
                     }
                     .padding(.horizontal, -25.0)
                     
-                    //go to EditView//
-                    Button(action: {
-                        self.isPresented.toggle()
-                        print(isPresented)
-                    }) {
-                        CircleView()
-                    }.offset(x: 158, y: 250)
+                VStack {
+                        Spacer()
+                        
+                        HStack {
+                            Spacer()
+                            
+                            Button(action: {
+                                self.isPresented.toggle()
+                                print(isPresented)
+                            }) {
+                                CircleView()
+                            }
+                        }
+                }.offset(x: -10, y: -10)
+            
+                    
                     
                 }
+                .environment(\.editMode, .constant(self.isEditing ? EditMode.active : EditMode.inactive)).animation(Animation.spring())
                 .navigationBarTitle("Infinito")
                 .sheet(isPresented: $isPresented, content: {
                     EditView()
@@ -62,31 +96,36 @@ struct ContentView: View {
                 })
             }
             //tool bar//
-            HStack(alignment: .center, spacing: 97) {
-                Button(action: {}) {
+            HStack(spacing: 70) {
+                Button(action: {
+                    self.isEditing.toggle()
+                }) {
                     Image(systemName: "highlighter")
                         .resizable()
                         .frame(width: 45, height: 45)
                         .padding()
-                        .foregroundColor(.orange)
-                }.offset(x: 10)
+                        .foregroundColor(isEditing ? .green : .orange)
+                }
                 Button(action: {}){
                     Image(systemName: "timelapse")
                         .resizable()
                         .frame(width: 45, height: 45)
-                        .offset(x: 4, y: 0)
                         .padding()
-                        .foregroundColor(.green)
-                }.offset(x: -16)
+                        .foregroundColor(.gray)
+                    
+                }
+                
                 Button(action: {}){
                     Image(systemName: "alarm")
                         .resizable()
                         .frame(width: 45, height: 45)
+                        .padding()
                         .foregroundColor(.red)
-                }.offset(x: -24)
+                }
             }
-        }
         
+        }
+
     }
 
 //MARK: -Preview
@@ -126,6 +165,7 @@ struct CellView: View {
                 
             }
             .frame(width: 30, height: 30, alignment: .center)
+            .buttonStyle(PlainButtonStyle())
             
                 Text(title)
                     .foregroundColor(.black)
@@ -140,8 +180,9 @@ struct CellView: View {
                                     .cornerRadius(30.0))
                     .foregroundColor(.white)
             }
-            .offset(x: -23)
-                
+            .buttonStyle(PlainButtonStyle())
+            .padding(.trailing)
+            
             }
         }
     }
