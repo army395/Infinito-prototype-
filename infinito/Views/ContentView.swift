@@ -12,7 +12,7 @@ import SwiftUI
 //WORK TO ELIMINATE ALL OFFSETS AT ALL COSTS.//
 
 struct ContentView: View {
-//MARK: -Properties and Methods
+    //MARK: -Properties and Methods
     //CoreData enviroment and fetchRequest//
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(entity: Task.entity(), sortDescriptors: [ NSSortDescriptor(
@@ -24,14 +24,15 @@ struct ContentView: View {
     //sheet view..need to find a way to close view using the confirm button//
     @State var isPresented = false
     @State var isEditing = false
+   
     
     func move( from source: IndexSet, to destination: Int){
         // Make an array of items from fetched results
         var taskItems: [ Task ] = tasks.map{ $0 }
-
+        
         // change the order of the items in the array
         taskItems.move(fromOffsets: source, toOffset: destination )
-
+        
         // update the userOrder attribute in revisedItems to
         // persist the new order. This is done in reverse order
         // to minimize changes to the indices.
@@ -43,8 +44,8 @@ struct ContentView: View {
                 Int16( reverseIndex )
         }
     }
-        
- //MARK: -View
+
+    //MARK: -View
     var body: some View {
         VStack {
             NavigationView {
@@ -60,7 +61,7 @@ struct ContentView: View {
                             self.moc.delete(deleteItem)
                             
                             do{
-                               try moc.save()
+                                try moc.save()
                             }catch{
                                 print(error)
                             }
@@ -69,7 +70,7 @@ struct ContentView: View {
                     }
                     .padding(.horizontal, -25.0)
                     
-                VStack {
+                    VStack {
                         Spacer()
                         
                         HStack {
@@ -82,8 +83,8 @@ struct ContentView: View {
                                 CircleView()
                             }
                         }
-                }.offset(x: -10, y: -10)
-            
+                    }.offset(x: -10, y: -10)
+                    
                     
                     
                 }
@@ -123,12 +124,12 @@ struct ContentView: View {
                         .foregroundColor(.red)
                 }
             }
-        
+            
         }
-
+        
     }
-
-//MARK: -Preview
+    
+    //MARK: -Preview
     struct ContentView_Previews: PreviewProvider {
         static var previews: some View {
             let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -144,10 +145,11 @@ struct CellView: View {
     @State var completionState: Bool
     @State var title: String
     @State var priority: String
-
+    @State var actionSheetPresented = false
+    
     var body: some View {
         HStack{
-           //Mark task complete//
+            //Mark task complete//
             Button(action: {
                 completionState.toggle()
             }) {
@@ -167,23 +169,48 @@ struct CellView: View {
             .frame(width: 30, height: 30, alignment: .center)
             .buttonStyle(PlainButtonStyle())
             
-                Text(title)
-                    .foregroundColor(.black)
+            Text(title)
+                .foregroundColor(.black)
             
             Spacer()
             
-            Button(action: {}) {
-                Text(priority)
-                    .background(Image("buttonBackground")
-                                    .resizable()
-                                    .frame(width: 40, height: 40, alignment: .center)
-                                    .cornerRadius(30.0))
-                    .foregroundColor(.white)
+            switch priority {
+            case "Dorment":
+                
+                Button(action: {self.actionSheetPresented.toggle()}) {
+                    Image(systemName: "zzz")
+                        .resizable()
+                        .frame(width: 30, height: 30, alignment: .center)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.trailing, 10.0)
+                
+                
+                
+            default:
+                Button(action: {self.actionSheetPresented.toggle()}) {
+                    
+                    Text(priority)
+                        .background(Image("buttonBackground")
+                                        .resizable()
+                                        .frame(width: 40, height: 40, alignment: .center)
+                                        .cornerRadius(30.0))
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.trailing)
+                
             }
-            .buttonStyle(PlainButtonStyle())
-            .padding(.trailing)
             
-            }
         }
+        .actionSheet(isPresented: $actionSheetPresented, content: {
+            ActionSheet(title: Text("Change the priority"), message: nil, buttons: [
+                .default(Text("A")) {priority = "A"},
+                .default(Text("B")) {priority = "B"},
+                .default(Text("C")) {priority = "C"},
+                .default(Text("Dorment")) {priority = "Dorment"}
+            ])
+        })
     }
+}
 

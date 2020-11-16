@@ -5,7 +5,7 @@
 //  Created by Armando Visini on 28/10/2020.
 //
 import SwiftUI
-
+import UIKit
 struct EditView: View{
     
     @Environment(\.managedObjectContext) var moc
@@ -15,6 +15,12 @@ struct EditView: View{
     @State var priority1: Bool = false
     @State var priority2: Bool = false
     @State var priority3: Bool = false
+    
+    @State var isPressed: Bool = false
+    @State var isPressed1: Bool = false
+    @State var isPressed2: Bool = false
+    
+    @Environment(\.presentationMode) var presentation
     
     func priorityCheck(){
         if priority1 == true {
@@ -31,16 +37,9 @@ struct EditView: View{
    
     var body: some View {
         NavigationView {
-            VStack(alignment: .leading){
-                Text("Title of task")
-                    .font(.title)
-                    .fontWeight(.bold)
-                HStack {
-                    TextField("Enter name of task here...", text: $titleOfTask)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                }
-                Text("Priority")
+            VStack(alignment: .center){
+                
+                Text("Chose task importance:")
                     .font(.title)
                     .fontWeight(.bold)
                     .padding(.top, 50.0)
@@ -50,11 +49,16 @@ struct EditView: View{
                     Button(action: {
                         self.priority1.toggle()
                         
+                        self.isPressed.toggle()
+                        self.isPressed1 = false
+                        self.isPressed2 = false
+                        
                         priorityCheck()
                         }) {
                         Text("A")
                             .font(.title)
-                            .background(Image("buttonBackground")
+                            .background(
+                                Image(isPressed ? "buttonBackgroundPressed" : "buttonBackground")
                                             .resizable()
                                             .frame(width: 80, height: 80, alignment: .center)
                                             .cornerRadius(50.0))
@@ -63,11 +67,15 @@ struct EditView: View{
                     Button(action: {
                         self.priority2.toggle()
                         
+                        self.isPressed1.toggle()
+                        self.isPressed = false
+                        self.isPressed2 = false
+                        
                         priorityCheck()
                     }) {
                         Text("B")
                             .font(.title)
-                            .background(Image("buttonBackground")
+                            .background(Image(isPressed1 ? "buttonBackgroundPressed" : "buttonBackground")
                                             .resizable()
                                             .frame(width: 80, height: 80, alignment: .center)
                                             .cornerRadius(50.0))
@@ -76,24 +84,48 @@ struct EditView: View{
                     Button(action: {
                         self.priority3.toggle()
                         
+                        self.isPressed2.toggle()
+                        self.isPressed = false
+                        self.isPressed1 = false
+                        
                         priorityCheck()
                     }) {
                         Text("C")
                             .font(.title)
-                            .background(Image("buttonBackground")
+                            .background(Image(isPressed2 ? "buttonBackgroundPressed" : "buttonBackground")
                                             .resizable()
                                             .frame(width: 80, height: 80, alignment: .center)
                                             .cornerRadius(50.0))
                             .foregroundColor(.white)
-                        
-                        
                     }
-                }.offset(x: 50)
+                    
+                }.padding()
+                
+                Text("If the task doesn't have a priority, don't press any buttons")
+                    .font(.footnote)
+                    .multilineTextAlignment(.center)
+                    .frame(width: 250, alignment: .center)
+                    .padding(.top, 20.0)
+                    .background(Rectangle().fill(Color.white)
+                                    .shadow(radius: 3)
+                                    .padding(.top, 20.0))
+                
+                VStack {
+                    Text("Title of task:")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    
+                    TextField("Enter name of task here...", text: $titleOfTask)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                }.padding()
+                .padding(.top, 50)
+                
                 
                 Button(action: {
                     //This button saves data in CoreData//
                     
                     if titleOfTask == ""{
+                        //to be changed//
                         print("No task name or priority")
                     } else{
                     
@@ -109,11 +141,15 @@ struct EditView: View{
                         task.priority = "B"
                     }else if priority3 == true{
                         task.priority = "C"
+                    }else{
+                        task.priority = "Dorment"
                     }
-                    
+    
                     try? self.moc.save()
                     
                     UIApplication.shared.endEditing()
+                        
+                    self.presentation.wrappedValue.dismiss()
                 }
                 }) {
                     Text("Confirm")
@@ -127,11 +163,11 @@ struct EditView: View{
                         .cornerRadius(6.0)
                         
                 }
-                .padding(.horizontal, 140.0)
+                .padding(.horizontal, 140)
                 .offset( y: 100)
                 
             }
-            .padding()
+            .padding(.all)
             .offset(y: -200.0)
         }
     }
