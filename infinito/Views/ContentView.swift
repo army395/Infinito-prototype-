@@ -9,7 +9,7 @@ import SwiftUI
 
 //VERY IMPORTANT NOTE//
 
-//WORK TO ELIMINATE ALL OFFSETS AT ALL COSTS.//
+
 
 struct ContentView: View {
     //MARK: -Properties and Methods
@@ -22,8 +22,8 @@ struct ContentView: View {
                                                                 keyPath:\Task.title,
                                                                 ascending: true )]) var tasks: FetchedResults<Task>
     //sheet view..need to find a way to close view using the confirm button//
-    @State var isPresented = false
-    @State var isEditing = false
+    @State private var isPresented = false
+    @State private var isEditing = false
    
     
     func move( from source: IndexSet, to destination: Int){
@@ -47,87 +47,88 @@ struct ContentView: View {
 
     //MARK: -View
     var body: some View {
-        VStack {
             NavigationView {
-                ZStack {
-                    //List with delete with swipe functionality//
-                    List{
-                        ForEach(tasks, id: \.id){ task in
-                            CellView(completionState: task.completionState, title: task.title!, priority: task.priority ?? "")
-                        }
-                        .onMove(perform: move)
-                        .onDelete{IndexSet in
-                            let deleteItem = self.tasks[IndexSet.first!]
-                            self.moc.delete(deleteItem)
-                            
-                            do{
-                                try moc.save()
-                            }catch{
-                                print(error)
+                VStack {
+                    ZStack {
+                        //List with delete with swipe functionality//
+                        List{
+                            ForEach(tasks, id: \.id){ task in
+                                CellView(completionState: task.completionState, title: task.title!, priority: task.priority ?? "")
                             }
-                            
+                            .onMove(perform: move)
+                            .onDelete{IndexSet in
+                                let deleteItem = self.tasks[IndexSet.first!]
+                                self.moc.delete(deleteItem)
+                                
+                                do{
+                                    try moc.save()
+                                }catch{
+                                    print(error)
+                                }
+                                
+                            }
                         }
-                    }
-                    .padding(.horizontal, -25.0)
-                    
-                    VStack {
-                        Spacer()
+                        .padding(.horizontal, -25.0)
                         
-                        HStack {
+                        VStack {
                             Spacer()
                             
-                            Button(action: {
-                                self.isPresented.toggle()
-                                print(isPresented)
-                            }) {
-                                CircleView()
+                            HStack {
+                                Spacer()
+                                
+                                Button(action: {
+                                    self.isPresented.toggle()
+                                    print(isPresented)
+                                }) {
+                                    CircleView()
+                                }
                             }
+                        }.offset(x: -10, y: -10)
+                        
+                    }
+                    
+                    HStack(spacing: 70) {
+                        Button(action: {
+                            self.isEditing.toggle()
+                        }) {
+                            Image(systemName: "highlighter")
+                                .resizable()
+                                .frame(width: 45, height: 45)
+                                .padding()
+                                .foregroundColor(isEditing ? .green : .orange)
                         }
-                    }.offset(x: -10, y: -10)
-                    
-                    
-                    
+                        Button(action: {}){
+                            Image(systemName: "timelapse")
+                                .resizable()
+                                .frame(width: 45, height: 45)
+                                .padding()
+                                .foregroundColor(.gray)
+                            
+                        }
+                        
+                        NavigationLink(destination: TimeCrunchView()) {
+                            Image(systemName: "alarm")
+                                .resizable()
+                                .frame(width: 45, height: 45)
+                                .padding()
+                                .foregroundColor(.red)
+                        }
+                        
+                    }
+                    .background(Color(.white))
+                    .navigationBarTitle("Infinito")
                 }
                 .environment(\.editMode, .constant(self.isEditing ? EditMode.active : EditMode.inactive)).animation(Animation.spring())
-                .navigationBarTitle("Infinito")
-                .sheet(isPresented: $isPresented, content: {
-                    EditView()
-                        .environment(\.managedObjectContext, self.moc)
-                    //edit view with MOC passed//
-                })
             }
+            .sheet(isPresented: $isPresented, content: {
+                EditView()
+                    .environment(\.managedObjectContext, self.moc)
+                //edit view with MOC passed//
+            })
             //tool bar//
-            HStack(spacing: 70) {
-                Button(action: {
-                    self.isEditing.toggle()
-                }) {
-                    Image(systemName: "highlighter")
-                        .resizable()
-                        .frame(width: 45, height: 45)
-                        .padding()
-                        .foregroundColor(isEditing ? .green : .orange)
-                }
-                Button(action: {}){
-                    Image(systemName: "timelapse")
-                        .resizable()
-                        .frame(width: 45, height: 45)
-                        .padding()
-                        .foregroundColor(.gray)
-                    
-                }
-                
-                Button(action: {}){
-                    Image(systemName: "alarm")
-                        .resizable()
-                        .frame(width: 45, height: 45)
-                        .padding()
-                        .foregroundColor(.red)
-                }
-            }
-            
+
         }
         
-    }
     
     //MARK: -Preview
     struct ContentView_Previews: PreviewProvider {
@@ -142,10 +143,10 @@ struct CellView: View {
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(entity: Task.entity(), sortDescriptors: []) var tasks: FetchedResults<Task>
     
-    @State var completionState: Bool
-    @State var title: String
-    @State var priority: String
-    @State var actionSheetPresented = false
+    @State  var completionState: Bool
+    @State  var title: String
+    @State  var priority: String
+    @State  var actionSheetPresented = false
     
     var body: some View {
         HStack{

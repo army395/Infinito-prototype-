@@ -16,6 +16,8 @@
 		7576DE35254DD71A00D38110 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7576DE33254DD71A00D38110 /* LaunchScreen.storyboard */; };
 		7576DE46254DE0F100D38110 /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7576DE45254DE0F100D38110 /* CircleView.swift */; };
 		7576DE4A254DE19400D38110 /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7576DE49254DE19400D38110 /* EditView.swift */; };
+		75772CE82563BC1B001FEB04 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75772CE72563BC1B001FEB04 /* Colors.swift */; };
+		75772CED2563C4E4001FEB04 /* TimeCrunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75772CEC2563C4E4001FEB04 /* TimeCrunchView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		7576DE36254DD71A00D38110 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7576DE45254DE0F100D38110 /* CircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
 		7576DE49254DE19400D38110 /* EditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
+		75772CE72563BC1B001FEB04 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		75772CEC2563C4E4001FEB04 /* TimeCrunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeCrunchView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +69,7 @@
 				7576DE3D254DD72700D38110 /* Life Cycle */,
 				7576DE3E254DD75500D38110 /* Views */,
 				7576DE44254DE0DD00D38110 /* Support Views */,
+				75772CEA2563BC25001FEB04 /* Models */,
 				7576DE2E254DD71A00D38110 /* Assets.xcassets */,
 				7576DE33254DD71A00D38110 /* LaunchScreen.storyboard */,
 				7576DE36254DD71A00D38110 /* Info.plist */,
@@ -96,6 +101,7 @@
 			children = (
 				7576DE29254DD71800D38110 /* ContentView.swift */,
 				7576DE49254DE19400D38110 /* EditView.swift */,
+				75772CEC2563C4E4001FEB04 /* TimeCrunchView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -106,6 +112,14 @@
 				7576DE45254DE0F100D38110 /* CircleView.swift */,
 			);
 			path = "Support Views";
+			sourceTree = "<group>";
+		};
+		75772CEA2563BC25001FEB04 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				75772CE72563BC1B001FEB04 /* Colors.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -179,6 +193,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7576DE26254DD71800D38110 /* AppDelegate.swift in Sources */,
+				75772CED2563C4E4001FEB04 /* TimeCrunchView.swift in Sources */,
+				75772CE82563BC1B001FEB04 /* Colors.swift in Sources */,
 				7576DE46254DE0F100D38110 /* CircleView.swift in Sources */,
 				7576DE4A254DE19400D38110 /* EditView.swift in Sources */,
 				7576DE2D254DD71800D38110 /* infinito.xcdatamodeld in Sources */,

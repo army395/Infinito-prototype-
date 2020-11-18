@@ -11,14 +11,14 @@ struct EditView: View{
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(entity: Task.entity(), sortDescriptors: []) var tasks: FetchedResults<Task>
     
-    @State var titleOfTask: String = ""
-    @State var priority1: Bool = false
-    @State var priority2: Bool = false
-    @State var priority3: Bool = false
+    @State private var titleOfTask: String = ""
+    @State private var priority1: Bool = false
+    @State private var priority2: Bool = false
+    @State private var priority3: Bool = false
     
-    @State var isPressed: Bool = false
-    @State var isPressed1: Bool = false
-    @State var isPressed2: Bool = false
+    @State private var isPressed: Bool = false
+    @State private var isPressed1: Bool = false
+    @State private var isPressed2: Bool = false
     
     @Environment(\.presentationMode) var presentation
     
